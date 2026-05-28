@@ -8,13 +8,14 @@
 
 ## 项目概览
 
-本项目包含三个子项目，涵盖从复古 8086 到现代 AVX2 向量化加速的多种汇编/C 语言实现：
+本项目包含四个子项目，涵盖从复古 8086 到现代 AVX2 向量化加速的多种汇编/C 语言实现：
 
 | 项目 | 说明 | 核心内容 |
 |------|------|----------|
 | **[fft](./fft/)** | 快速傅里叶变换 | 8086+8087 FPU 汇编 + AVX2 SIMD 加速 + 性能基准测试 |
 | **[convolution](./convolution/)** | 一维复数卷积 | 8086 软件浮点运算 + 复数算术 + 优化策略分析 |
-| **[misc](./misc/)** | 成绩判定器 & 矩阵乘法 | 8086 整数定点运算 + 二维矩阵乘法 + 字符串解析 |
+| **[grade-checker](./grade-checker/)** | 成绩判定器 | DOS 终端交互 + 浮点字符串解析 + DFA 状态机 |
+| **[matrix-multiplication](./matrix-multiplication/)** | 矩阵乘法 | 8086 定点整数运算 + 三层循环 + 通用矩阵显示 |
 
 ---
 
@@ -52,15 +53,12 @@
 │   │   ├── generate_ppt.py
 │   │   └── 卷积项目报告.pptx
 │   └── screenshots/
-└── misc/                         # 其他 8086 汇编项目
-    ├── grade-checker/
-    │   ├── grade_checker.asm     #   成绩判定器 (浮点输入 → A~D)
-    │   └── screenshots/
-    ├── matrix-multiplication/
-    │   ├── matrix_mul.asm        #   矩阵乘法 (定点整数)
-    │   └── screenshots/
-    ├── generate_ppt.py
-    └── 计组课程设计汇报.pptx
+├── grade-checker/                 # 成绩判定器
+│   ├── grade_checker.asm          #   浮点字符串解析 + 等级判定
+│   └── screenshots/
+└── matrix-multiplication/         # 矩阵乘法
+    ├── matrix_mul.asm             #   定点整数 ×100 缩放 + 三层循环
+    └── screenshots/
 ```
 
 ---
@@ -132,11 +130,17 @@ gcc -std=c11 -O2 -DHAVE_FFTW -o benchmark_fft benchmark.c -lfftw3 -lm
 - 与 MATLAB 逐位验证 + OpenBLAS 性能对比
 - 详见 [convolution/doc/report.md](./convolution/doc/report.md)
 
-### 成绩判定器 & 矩阵乘法
+### 成绩判定器 (Grade Determiner)
 
-- **成绩判定器**: DOS 终端交互，浮点字符串解析，DFA 状态机
-- **矩阵乘法**: 定点整数 (×100 缩放)，三层循环，通用矩阵显示
-- 详见源码注释
+- DOS 终端交互，支持浮点输入（如 89.5）
+- 逐字符 DFA 解析：整数部分 → 小数点 → 小数部分
+- 范围校验 + Y/N 循环重试
+
+### 矩阵乘法 (Matrix Multiplication)
+
+- 通用维度矩阵乘法 C[MxO] = A[MxN] × B[NxO]
+- 定点整数 (×100 缩放) 避免 8087 协处理器
+- 带两位小数的通用矩阵显示子程序
 
 ---
 
